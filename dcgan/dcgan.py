@@ -114,13 +114,12 @@ class Discriminator(nn.Module):
 
     ''' Discriminator Model '''
 
-    def __init__(self,ngpu,nz,ndf,nc):
+    def __init__(self,ngpu,ndf,nc):
 
         ''' initialising the variables '''
 
         super(Discriminator,self).__init__()
         self.ngpu = ngpu
-        self.nz = nz
         self.ndf = ndf
         self.nc = nc
 
@@ -148,7 +147,7 @@ class Discriminator(nn.Module):
             nn.Conv2d(ndf*4, ndf*8, 4, 2, 1, bias=False), #sride=2, padding=1
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(ndf*8, 1, 4, 1, 0, bias=False), #sride=2, padding=1
+            nn.Conv2d(ndf*8, 1, 4, 1, 0, bias=False), #sride=1, padding=0
             nn.Sigmoid()
         )
         
