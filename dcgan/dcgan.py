@@ -1,66 +1,30 @@
 ''' This file contains the DCGAN module. '''
 
-from __future__ import print_function
-import argparse
-import os
-import random
 import torch
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
+
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
+import os
+import random
+
 from IPython.display import HTML
-
-class DCGAN(object):
-    def __init__(self, batch_size = 128, image_size = 64, nc = 3, nz = 100, ngf = 64, ndf = 64, num_epochs = 5, lr = 0.0002, beta1 = 0.5, ngpu = 1):
-        
-        ''' 
-        batch_size = the batch size used in training, according to the paper it is 128.
-
-        image_size = the spatial size of the image used for training, according to the paper it is 64*64.
-
-        nc = number of color channels in an image, we have used 3 channels(RGB).
-
-        nz = length of the latent vector that is initially passed into the Generator, according to the paper it is 100.
-
-        ngf =  denotes the depth of the feature maps passed through the Generator, according to the paper it is 64.
-
-        ndf = denotes the depth of the feature maps passed through the Discriminator, according to the paper it is 64.
-
-        num_epochs = number of epochs to run during training, according to the paper it is 5.
-
-        lr = learning rate for training, according to the paper it is 0.0002.
-
-        beta1 = hyperparameter for Adam Optimizer, according to the paper it is 0.5.
-
-        ngpu = number of GPUs available for training. If no GPU is available, the model will train on CPU. Here, we have only 1 GPU available.
-
-        '''
-
-        self.batch_size = batch_size
-        self.image_size = image_size
-        self.nc = nc
-        self.nz = nz
-        self.ngf = ngf
-        self.ndf = ndf
-        self.num_epochs = num_epochs
-        self.lr = lr
-        self.beta1 = beta1
-        self.ngpu = ngpu
-
 
 class Generator(nn.Module):
 
     ''' Generator Model '''
 
-    def __init__(self,ngpu,nz,ngf,nc):
+    def __init__(self,ngpu, nz, ngf, nc):
 
         ''' initialising the variables '''
 
@@ -85,23 +49,23 @@ class Generator(nn.Module):
         '''
         
         self.main = nn.Sequential(
-            nn.ConvTranspose2d(nz, ngf*8, 4, 1, 0, bias = False), #sride=1, padding=0
+            nn.ConvTranspose2d(nz, ngf*8, 4, 1, 0, bias = False), #stride=1, padding=0
             nn.BatchNorm2d(ngf*8),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(ngf*8, ngf*4, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.ConvTranspose2d(ngf*8, ngf*4, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.BatchNorm2d(ngf*4),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(ngf*4, ngf*2, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.ConvTranspose2d(ngf*4, ngf*2, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.BatchNorm2d(ngf*2),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(ngf*2, ngf, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.ConvTranspose2d(ngf*2, ngf, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.BatchNorm2d(ngf),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias=False),  #sride=2, padding=1
+            nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias=False),  #stride=2, padding=1
             nn.Tanh()
         )
 
@@ -135,19 +99,19 @@ class Discriminator(nn.Module):
         '''
 
         self.main = nn.Sequential(
-            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(ndf, ndf*2, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.Conv2d(ndf, ndf*2, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(ndf*2, ndf*4, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.Conv2d(ndf*2, ndf*4, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(ndf*4, ndf*8, 4, 2, 1, bias=False), #sride=2, padding=1
+            nn.Conv2d(ndf*4, ndf*8, 4, 2, 1, bias=False), #stride=2, padding=1
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(ndf*8, 1, 4, 1, 0, bias=False), #sride=1, padding=0
+            nn.Conv2d(ndf*8, 1, 4, 1, 0, bias=False), #stride=1, padding=0
             nn.Sigmoid()
         )
         
@@ -155,3 +119,72 @@ class Discriminator(nn.Module):
 
     def forward(self,input):
         return self.main(input)
+
+class DCGAN(object):
+
+    def __init__(self, data = 'data/lsun', batch_size = 128, image_size = 64, nc = 3, nz = 100, ngf = 64, ndf = 64, num_epochs = 5, lr = 0.0002, beta1 = 0.5, ngpu = 1):
+        
+        ''' 
+        The constructor has the Parameters which are going to be used to generate the images
+
+        Parameters:
+
+        - data(dafault: 'data/lsun'): path to the dataset used for training, according to the paper we shall use the Large-scale Scene Understanding (LSUN) dataset.
+
+        - batch_size(default: 128): the batch size used in training, according to the paper it is 128.
+
+        - image_size(default: 64): the spatial size of the image used for training, according to the paper it is 64*64.
+
+        - nc(default: 3): number of color channels in an image, we have used 3 channels(RGB).
+
+        - nz(default: 100): length of the latent vector that is initially passed into the Generator, according to the paper it is 100.
+
+        - ngf(default: 64):  denotes the depth of the feature maps passed through the Generator, according to the paper it is 64.
+
+        - ndf(default: 64): denotes the depth of the feature maps passed through the Discriminator, according to the paper it is 64.
+
+        - num_epochs(default: 5): number of epochs to run during training, according to the paper it is 5.
+
+        - lr(default: 0.0002): learning rate for training, according to the paper it is 0.0002.
+
+        - beta1(default: 0.5): hyperparameter for Adam Optimizer, according to the paper it is 0.5.
+
+        - ngpu(default: 1): number of GPUs available for training. If no GPU is available, the model will train on CPU. Here, we have only 1 GPU available.
+        '''
+
+        if ngpu > 0 and not torch.cuda.is_available():
+            raise ValueError('ngpu > 0 but cuda not available')
+
+        self.dataroot = data
+        self.batch_size = batch_size
+        self.image_size = image_size
+        self.nc = nc
+        self.nz = nz
+        self.ngf = ngf
+        self.ndf = ndf
+        self.num_epochs = num_epochs
+        self.lr = lr
+        self.beta1 = beta1
+        self.ngpu = ngpu
+        self.device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
+
+    '''
+    creating the dataset and dataloader
+    '''
+
+    def data_loader(self, dataroot):
+
+        ''' Creating the dataset '''
+        dataset = dset.ImageFolder(root = self.dataroot,
+                                transform = transforms.Compose([
+                                transforms.Resize(self.image_size),
+                                transforms.CenterCrop(self.image_size),
+                                transforms.ToTensor(),
+                                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                            ]))
+
+        ''' Creating the dataloader '''
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size = self.batch_size,
+                                                shuffle = True)
+
+        return dataloader
