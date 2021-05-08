@@ -188,3 +188,26 @@ class DCGAN(object):
                                                 shuffle = True)
 
         return dataloader
+
+    
+    '''
+    randomly initializing model weights from a Normal distribution with mean = 0, stdev = 0.02 as mentioned in the DCGAN paper
+    '''
+
+    def weights_init(self, init_model):
+
+        '''
+        input: an initialized model
+
+        output: reinitialized convolutional, convolutional-transpose, and batch normalization layers 
+        '''
+
+        classname = init_model.__class__.__name__
+
+        if classname.find('Conv') != -1:
+            nn.init.normal_(init_model.weight.data, 0.0, 0.02)
+            
+        elif classname.find('BatchNorm') != -1:
+            nn.init.normal_(init_model.weight.data, 1.0, 0.02)
+            nn.init.constant_(init_model.bias.data, 0)
+            
