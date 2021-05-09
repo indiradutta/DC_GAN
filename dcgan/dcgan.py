@@ -334,15 +334,17 @@ class DCGAN(object):
 
                 ''' output training steps '''
                 if i%50==0:
-                    print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f' % (epoch, num_epochs, i, len(dataloader), errorD.item(), errorG.item(), Dx, Dz, Gz))
+                    print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f' % (epoch, self.num_epochs, i, len(dataloader), errorD.item(), errorG.item(), Dx, Dz, Gz))
 
                 ''' saving the losses from the discriminator and generator '''
                 G_losses.append(errorG.item())
                 D_losses.append(errorD.item())
 
-                if (iters % 500 == 0) or ((epoch == num_epochs-1) and (i==len(dataloader)-1)):
+                if (iters % 500 == 0) or ((epoch == self.num_epochs-1) and (i==len(dataloader)-1)):
                     with torch.no_grad():
                         fake = netG(fixed_noise).detach.cpu()
                     img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
 
                 iters+=1
+                
+        return img_list
