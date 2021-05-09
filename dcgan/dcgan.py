@@ -295,6 +295,7 @@ class DCGAN(object):
                 ''' generating a fake batch from the generator '''
                 noise = torch.randn(b_size, self.nz, 1, 1, device=self.device)
                 fake_batch = netG(noise)
+                label.fill_(fake_label)
 
                 ''' passing the batch of fake samples through the discriminator '''
                 output = netD(fake_batch.detach()).view(-1)
@@ -317,7 +318,7 @@ class DCGAN(object):
                 netG.zero_grad()
 
                 ''' creating the target tensor '''
-                label.fill(real_label)
+                label.fill_(real_label)
 
                 ''' passing the batch of fake samples through the discriminator '''
                 output = netD(fake_batch).view(-1)
@@ -334,7 +335,7 @@ class DCGAN(object):
 
                 ''' output training steps '''
                 if i%50==0:
-                    print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f' % (epoch, self.num_epochs, i, len(dataloader), errorD.item(), errorG.item(), Dx, Dz, Gz))
+                    print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f' % (epoch+1, self.num_epochs, i, len(dataloader), errorD.item(), errorG.item(), Dx, Dz, Gz))
 
                 ''' saving the losses from the discriminator and generator '''
                 G_losses.append(errorG.item())
@@ -342,9 +343,9 @@ class DCGAN(object):
 
                 if (iters % 500 == 0) or ((epoch == self.num_epochs-1) and (i==len(dataloader)-1)):
                     with torch.no_grad():
-                        fake = netG(fixed_noise).detach.cpu()
+                        fake = netG(fixed_noise).detach().cpu()
                     img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
 
                 iters+=1
                 
-        return img_list
+        return img_list, G_losses, D_losses
