@@ -172,7 +172,7 @@ class DCGAN(object):
     creating the dataset and dataloader
     '''
 
-    def data_loader(self, dataroot):
+    def data_loader(self):
 
         ''' Creating the dataset '''
         dataset = dset.ImageFolder(root = self.dataroot,
@@ -211,3 +211,65 @@ class DCGAN(object):
             nn.init.normal_(init_model.weight.data, 1.0, 0.02)
             nn.init.constant_(init_model.bias.data, 0)
             
+    
+    def train(self):
+
+        ''' loading the data '''
+        dataloader = self.data_loader()
+
+        ''' Creating the generator '''
+        netG = Generator(self.ngpu, self.nz, self.ngf, self.nc).to(device)
+
+        if (self.device.type == 'cuda') and (self.ngpu > 1):
+            netG = nn.DataParallel(netG, list(range(self.ngpu)))
+
+        ''' Apply the weights_init function to randomly initialize all weights to mean=0, stdev=0.2 '''
+        netG.apply(self.weights_init)
+
+        ''' Creating the discriminator '''
+        netD = Discriminator(self.ngpu, self.ndf, self.nc).to(device)
+
+        if (self.device.type == 'cuda') and (self.ngpu > 1):
+            netD = nn.DataParallel(netG, list(range(self.ngpu)))
+
+        ''' Apply the weights_init function to randomly initialize all weights to mean=0, stdev=0.2 '''
+        netD.apply(self.weights_init)
+
+
+        ''' loss function: we shall use the binary cross entropy loss as mentioned in the paper '''
+        adversarial_loss = torch.nn.BCELoss()  
+
+        ''' Creating batch of latent vectors that we will use to visualize the progression of the generator '''
+        fixed_noise = torch.randn(64, self.nz, 1, 1, device = self.device)
+
+        ''' defining real label as 1 and the fake label as 0, to be used when calculating the losses of Discriminator and Generator '''
+        real_label = 1.
+        fake_label = 0.
+
+        ''' setting up two separate Adam optimizers, for Discriminator and G as specified in the DCGAN papers, with learning rate 0.0002 and Beta1 = 0.5 '''
+        optimizerD = optim.Adam(netD.parameters(), lr =self.lr, betas = (self.beta1, 0.999))
+        optimizerG = optim.Adam(netG.parameters(), lr =self.lr, betas = (self.beta1, 0.999))
+
+        '''
+        Training:
+
+        - construct different mini-batches for real and fake images, and adjust G’s objective function to maximize log(D(G(z)))
+
+        - Discriminator Training: update the discriminator by ascending its stochastic gradient, maximize log(D(x))+log(1−D(G(z)))
+
+        - Generator Training: train the Generator by minimizing log(1-D(G(z)))
+        '''
+
+        img_list = []
+        G_losses = []
+        D_losses = []
+        iters = 0
+
+        print('Training...')
+
+        for epoch in range(self.num_epochs):
+            for i, data in enumerate(dataloader, 0):
+
+                '''
+                updating Discriminator network: maximize log(D(x)) + log(1 - D(G(z)))
+                ''' 
