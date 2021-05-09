@@ -346,8 +346,3 @@ class DCGAN(object):
                     img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
 
                 iters+=1
-
-
-
-
-
