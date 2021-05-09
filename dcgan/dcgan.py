@@ -218,16 +218,16 @@ class DCGAN(object):
         dataloader = self.data_loader()
 
         ''' Creating the generator '''
-        netG = Generator(self.ngpu, self.nz, self.ngf, self.nc).to(device)
+        netG = Generator(self.ngpu, self.nz, self.ngf, self.nc).to(self.device)
 
         if (self.device.type == 'cuda') and (self.ngpu > 1):
             netG = nn.DataParallel(netG, list(range(self.ngpu)))
 
-        ''' Apply the weights_init function to randomly initialize all weights to mean=0, stdev=0.2 '''
+        ''' Apply the weights_init function to randomly initialize all weights from a distribution with mean=0, stdev=0.2 '''
         netG.apply(self.weights_init)
 
         ''' Creating the discriminator '''
-        netD = Discriminator(self.ngpu, self.ndf, self.nc).to(device)
+        netD = Discriminator(self.ngpu, self.ndf, self.nc).to(self.device)
 
         if (self.device.type == 'cuda') and (self.ngpu > 1):
             netD = nn.DataParallel(netG, list(range(self.ngpu)))
@@ -269,7 +269,85 @@ class DCGAN(object):
 
         for epoch in range(self.num_epochs):
             for i, data in enumerate(dataloader, 0):
+                
+                ''' Training the Discriminator with real samples '''
+                ''' updating Discriminator network: maximize log(D(x)) + log(1 - D(G(z))) ''' 
+                netD.zero_grad()
 
-                '''
-                updating Discriminator network: maximize log(D(x)) + log(1 - D(G(z)))
-                ''' 
+                ''' creating batches of real samples from the dataset '''
+                batch = data[0].to(self.device)
+                b_size = batch.size(0)
+
+                ''' creating the target tensor '''
+                label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
+
+                ''' passing the batch of real samples through the discriminator '''
+                output = netD(batch).view(-1)
+
+                ''' calculating the discriminator error for real samples '''
+                errorD_real = adversarial_loss(output, label)
+
+                ''' calculating the gradients through backprop '''
+                errorD_real.backward()
+                Dx = output.mean().item()
+
+                ''' Training the Discriminator with fake samples '''
+                ''' generating a fake batch from the generator '''
+                noise = torch.randn(b_size, self.nz, 1, 1, device=self.device)
+                fake_batch = netG(noise)
+
+                ''' passing the batch of fake samples through the discriminator '''
+                output = netD(fake_batch.detach()).view(-1)
+
+                ''' calculating the discriminator error for fake samples '''
+                errorD_fake = adversarial_loss(output, label)
+
+                ''' calculating the gradients through backprop '''
+                errorD_fake.backward()
+                Dz = output.mean().item()
+                
+                ''' computing the final discriminator error '''
+                errorD = errorD_fake + errorD_real
+
+                ''' updating the discrimintor '''
+                optimizerD.step()
+
+
+                ''' Training the Generator '''
+                netG.zero_grad()
+
+                ''' creating the target tensor '''
+                label.fill(real_label)
+
+                ''' passing the batch of fake samples through the discriminator '''
+                output = netD(fake_batch).view(-1)
+
+                ''' calculating the generator error '''
+                errorG = adversarial_loss(output, label)
+
+                ''' calculating the gradients through backprop '''
+                errorG.backward()
+                Gz = output.mean().item()
+
+                ''' updating the generator '''
+                optimizerG.step()
+
+                ''' output training steps '''
+                if i%50==0:
+                    print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f' % (epoch, num_epochs, i, len(dataloader), errorD.item(), errorG.item(), Dx, Dz, Gz))
+
+                ''' saving the losses from the discriminator and generator '''
+                G_losses.append(errorG.item())
+                D_losses.append(errorD.item())
+
+                if (iters % 500 == 0) or ((epoch == num_epochs-1) and (i==len(dataloader)-1)):
+                    with torch.no_grad():
+                        fake = netG(fixed_noise).detach.cpu()
+                    img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
+
+                iters+=1
+
+
+
+
+
