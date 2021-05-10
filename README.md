@@ -35,3 +35,49 @@ The resulting directory structure should be:
 <br>
 
 **Note**: You may use any other dataset of your choice. However, please ensure that the directory structure remains the same for the code to be compatible with it. 
+
+## Installation and Usage Guidelines
+To use the repo and generate your own images please follow the guidelines below
+
+
+- Cloning the Repository: 
+
+        git clone https://github.com/indiradutta/DC_GAN
+        
+- Entering the directory: 
+
+        cd DC_GAN
+        
+- Setting up the Python Environment with dependencies:
+
+        pip install -r requirements.txt
+
+- Running the file:
+
+        python3 test.py
+        
+
+Check out the demo notebook <a href = 'https://github.com/indiradutta/DC_GAN/blob/main/demo/dcgan_demo.ipynb'>here</a>.
+
+**Note**: Is is advisable to use a GPU for training because training the DCGAN is computationally very expensive
+<hr>
+
+## Results from Implementation
+
+- Plot to see how D and G’s losses changed during training
+
+<img src = "results/losses.png">
+
+- Batches of fake data from G
+
+<img src = "results/result.png"> &nbsp; &nbsp; <img src = "results/result2.png">
+
+- Training progression of G
+
+
+https://user-images.githubusercontent.com/66861243/117669333-67e99600-b1c4-11eb-885c-bcb5e4b7b299.mp4
+
+## Contributors
+
+- <a href = "https://github.com/indiradutta">Indira Dutta</a>
+- <a href = "https://github.com/srijarkoroy">Srijarko Roy</a>
