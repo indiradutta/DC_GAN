@@ -15,9 +15,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-import os
-import random
-
 from IPython.display import HTML
 
 class Generator(nn.Module):
