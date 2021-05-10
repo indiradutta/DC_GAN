@@ -56,13 +56,12 @@ To use the repo and generate your own images please follow the guidelines below
 
         python3 test.py
         
-The test.py file takes the path to the dataset as *"/content/dcgan/celeba"* dataset by default. Please initializing the DCGAN module with your desired dataset path and train as:
+The test.py file takes the path to the dataset as *"/content/dcgan/celeba"* dataset by default. Please initialize the DCGAN module with your desired dataset path and train as:
 
 ```python
 dc_gan = DCGAN(data = <path/to/dataset>)
 img_list, G_losses, D_losses = dc_gan.train()
 ```
-The hyperparameters have been set according the the original paper, hence it is advisable not to change them. However you may consider changing them as per your requirement. <br>
 
 Incase you have either no GPU (0) or more than 1 GPU on your machine, consider changing the ngpu parameter while initializing the DCGAN module with your desired dataset path and train as:
 
@@ -74,7 +73,7 @@ img_list, G_losses, D_losses = dc_gan.train()
 
 Check out the demo notebook <a href = 'https://github.com/indiradutta/DC_GAN/blob/main/demo/dcgan_demo.ipynb'>here</a>.
 
-**Note**: Is is advisable to use a GPU for training because training the DCGAN is computationally very expensive
+**Note**: Is is advisable to use a GPU for training because training the DCGAN is computationally very expensive.
 <hr>
 
 ## Results from Implementation
