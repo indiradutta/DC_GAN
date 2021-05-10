@@ -1,4 +1,8 @@
-''' This file contains the DCGAN module. '''
+'''
+This file contains the main DCGAN module.
+
+The results may be obtained by running 'train()'
+'''
 
 import torch
 import torch.nn as nn
