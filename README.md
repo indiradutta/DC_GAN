@@ -70,7 +70,7 @@ Check out the demo notebook <a href = 'https://github.com/indiradutta/DC_GAN/blo
 
 - Batches of fake data from G
 
-<img src = "results/result.png"> &nbsp; &nbsp; <img src = "results/result2.png">
+<img src = "results/result.png" height = 350px width = 350px> &nbsp; &nbsp; <img src = "results/result2.png" height = 350px width = 350px>
 
 - Training progression of G
 
