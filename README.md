@@ -107,6 +107,7 @@ Check out the demo notebook <a href = 'https://github.com/indiradutta/DC_GAN/blo
 
 https://user-images.githubusercontent.com/66861243/117669333-67e99600-b1c4-11eb-885c-bcb5e4b7b299.mp4
 
+Please check out the result <a href = "docs/documentation.md">documentation</a>. 
 ## Contributors
 
 - <a href = "https://github.com/indiradutta">Indira Dutta</a>
