@@ -87,7 +87,7 @@ dc_gan = DCGAN(data = <path/to/dataset>, ngpu = <number of GPUs available>)
 img_list, G_losses, D_losses = dc_gan.train()
 ```
 
-Check out the demo notebook <a href = 'https://github.com/indiradutta/DC_GAN/blob/main/demo/dcgan_demo.ipynb'>here</a>.
+Check out the standalone demo notebook and run dc_gan <a href = 'https://colab.research.google.com/github/indiradutta/DC_GAN/blob/main/demo/dcgan_standalone_demo.ipynb'>here</a>.
 
 **Note**: Is is advisable to use a GPU for training because training the DCGAN is computationally very expensive.
 <hr>
