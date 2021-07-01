@@ -349,6 +349,7 @@ class DCGAN(object):
 
                 iters+=1
         
+        ''' saving the model weights and losses '''
         torch.save({
             'generator_state_dict': netG.state_dict(),
             'discriminator_state_dict': netD.state_dict(),
