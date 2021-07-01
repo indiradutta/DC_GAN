@@ -1,1 +1,1 @@
-from .dcgan import DCGAN
+from .dcgan import DCGAN, Generator, Discriminator
