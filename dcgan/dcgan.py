@@ -213,7 +213,7 @@ class DCGAN(object):
             nn.init.constant_(init_model.bias.data, 0)
             
     
-    def train(self):
+    def train(self, path):
 
         ''' loading the data '''
         dataloader = self.data_loader()
@@ -348,5 +348,12 @@ class DCGAN(object):
                     img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
 
                 iters+=1
+        
+        torch.save({
+            'generator_state_dict': netG.state_dict(),
+            'discriminator_state_dict': netD.state_dict(),
+            'G_losses': G_losses,
+            'D_losses': D_losses
+            }, path) 
                 
         return img_list, G_losses, D_losses
