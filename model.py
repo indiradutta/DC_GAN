@@ -12,13 +12,13 @@ import torchvision.utils as vutils
 import numpy as np
 import os
 import json
-#import gdown
+import gdown
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
 
-from dcgan.dcgan import Generator
+from DC_GAN.dcgan.dcgan import Generator
 
 __PREFIX__ = os.path.dirname(os.path.realpath(__file__))
 
@@ -51,9 +51,9 @@ class Deep_Conv_GAN(object):
         self.ngpu = ngpu
         self.device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
-    def inference(self, set_weight_dir, set_gen_dir):
+    def inference(self, set_weight_dir = 'dcgan-model.pth', set_gen_dir = 'result_img'):
 
-        #set_weight_dir = __PREFIX__ + "/weights/" + set_weight_dir
+        set_weight_dir = __PREFIX__ + "/weights/" + set_weight_dir
 
         ''' saving generated images in a directory '''
         def save_image(set_gen_dir):
@@ -61,7 +61,7 @@ class Deep_Conv_GAN(object):
                 print("Found directory for saving generated images")
                 return 1
             else:
-                print("Directory for saving images not found, making a directory named 'gen_dir'")
+                print("Directory for saving images not found, making a directory named 'result_img'")
                 os.mkdir(set_gen_dir)
                 return 1
         
@@ -80,9 +80,9 @@ class Deep_Conv_GAN(object):
                 json_file = json.load(fp)
                 if not os.path.exists(__PREFIX__+"/weights/"):
                     os.mkdir(__PREFIX__+"/weights/")
-                url = 'https://drive.google.com/uc?id={}'.format(json_file['DCGAN-weight.pth'])
-                #gdown.download(url, __PREFIX__+"/weights/DCGAN-weight.pth", quiet=False)
-                set_weight_dir = "DCGAN-weight.pth"
+                url = 'https://drive.google.com/uc?id={}'.format(json_file['dcgan-model.pth'])
+                gdown.download(url, __PREFIX__+"/weights/dcgan-model.pth", quiet=False)
+                set_weight_dir = "dcgan-model.pth"
                 print("Download finished")
 
         ''' checking if weights are present '''
