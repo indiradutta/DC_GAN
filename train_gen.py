@@ -10,7 +10,7 @@ from IPython.display import HTML
 dc_gan = DCGAN(data = '/content/dcgan/celeba')
 
 # Training for num_epoch times
-img_list, G_losses, D_losses = dc_gan.train()
+img_list, G_losses, D_losses = dc_gan.train('model.pth')
 
 fig = plt.figure(figsize=(8,8))
 plt.axis("off")
