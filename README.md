@@ -98,8 +98,9 @@ Check out the standalone demo notebook and run dc_gan <a href = 'https://colab.r
 The test.py file takes the path to the pre-trained as *"model.pth"* by default. Please initialize the Deep_Conv_GAN with the desired path to the model and get thr inferences as:
 
 ```python
-Deep_Conv_GAN.inference(Deep_Conv_GAN, set_weight_dir='<path/to/pretrained/model>' , set_gen_dir='<path/to/save/inferences>')
+Deep_Conv_GAN.inference(Deep_Conv_GAN, set_weight_dir='model.pth' , set_gen_dir='<path/to/save/inferences>')
 ```
+Check out the standalone demo notebook and run inferences <a href = 'https://colab.research.google.com/drive/1C2vlQ2vR2fYGxkkSqAQNCAWxS0Hp_NrD?usp=sharing'>here</a>.
 
 <hr>
 
