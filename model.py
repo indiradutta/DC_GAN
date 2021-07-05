@@ -71,7 +71,7 @@ class Deep_Conv_GAN(object):
                 print("Found weights")
                 return 1
             else:
-                print("Downloading weigths")
+                print("Downloading weights")
                 download_weights()
 
         ''' downloading weights if not present '''
