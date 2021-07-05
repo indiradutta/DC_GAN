@@ -68,15 +68,15 @@ To use the repo and generate your own images please follow the guidelines below
 
         pip install -r requirements.txt
 
-- Running the file:
+- Running the file for training:
 
-        python3 test.py
+        python3 train_gen.py
         
-The test.py file takes the path to the dataset as *"/content/dcgan/celeba"* dataset by default. Please initialize the DCGAN module with your desired dataset path and train as:
+The train_gen.py file takes the path to the dataset as *"/content/dcgan/celeba"* dataset by default. Please initialize the DCGAN module with your desired dataset path and train as:
 
 ```python
 dc_gan = DCGAN(data = <path/to/dataset>)
-img_list, G_losses, D_losses = dc_gan.train()
+img_list, G_losses, D_losses = dc_gan.train(<path/to/save/model>)
 ```
 
 Incase you have either no GPU (0) or more than 1 GPU on your machine, consider changing the ngpu parameter while initializing the DCGAN module with your desired dataset path and train as:
@@ -84,12 +84,23 @@ Incase you have either no GPU (0) or more than 1 GPU on your machine, consider c
 
 ```python
 dc_gan = DCGAN(data = <path/to/dataset>, ngpu = <number of GPUs available>)
-img_list, G_losses, D_losses = dc_gan.train()
+img_list, G_losses, D_losses = dc_gan.train(<path/to/save/model>)
 ```
 
 Check out the standalone demo notebook and run dc_gan <a href = 'https://colab.research.google.com/github/indiradutta/DC_GAN/blob/main/demo/dcgan_standalone_demo.ipynb'>here</a>.
 
 **Note**: Is is advisable to use a GPU for training because training the DCGAN is computationally very expensive.
+
+- Running the file for inference:
+
+        python3 test.py
+        
+The test.py file takes the path to the pre-trained as *"model.pth"* by default. Please initialize the Deep_Conv_GAN with the desired path to the model and get thr inferences as:
+
+```python
+Deep_Conv_GAN.inference(Deep_Conv_GAN, set_weight_dir='<path/to/pretrained/model>' , set_gen_dir='<path/to/save/inferences>')
+```
+
 <hr>
 
 ## Results from Implementation
